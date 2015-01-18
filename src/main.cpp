@@ -1,6 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2013-2014 The Catcoin developers
+// Copyright (c) 2013-2015 The Catcoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -1083,7 +1083,7 @@ static const int64 nIntervalOld = nTargetTimespanOld / nTargetSpacing;
 // minimum amount of work that could possibly be required nTime after
 // minimum work required was nBase
 //
-unsigned int ComputeMinWork(unsigned int nBase, int64 nTime)
+unsigned int ComputeMinWork(unsigned int nBase, int64 nTime, int height)
 {
 
     // Testnet has min-difficulty blocks
@@ -1095,10 +1095,13 @@ unsigned int ComputeMinWork(unsigned int nBase, int64 nTime)
     bnResult.SetCompact(nBase);
     while (nTime > 0 && bnResult < bnProofOfWorkLimit)
     {
-	// should technically be 112/100 * 36 .. ~40
-        bnResult *= 40;
-        // and if we have long blocks, max 40 x, as well
-        nTime -= nTargetTimespan*40;
+	 // Maximum 400% adjustment...
+         bnResult *= 4;
+         // ... in best-case exactly 4-times-normal target time 
+         if(height < 20290)
+             nTime -= nTargetTimespanOld*4;
+         else
+             nTime -= nTargetTimespan*4;
     }
     if (bnResult > bnProofOfWorkLimit)
         bnResult = bnProofOfWorkLimit;
@@ -2457,8 +2460,6 @@ bool CBlock::AcceptBlock(CValidationState &state, CDiskBlockPos *dbp)
 
 bool CBlockIndex::IsSuperMajority(int minVersion, const CBlockIndex* pstart, unsigned int nRequired, unsigned int nToCheck)
 {
-    // Catcoin: temporarily disable v2 block lockin until we are ready for v2 transition
-    return false;
     unsigned int nFound = 0;
     for (unsigned int i = 0; i < nToCheck && nFound < nRequired && pstart != NULL; i++)
     {
@@ -2494,16 +2495,13 @@ bool ProcessBlock(CValidationState &state, CNode* pfrom, CBlock* pblock, CDiskBl
         CBigNum bnNewBlock;
         bnNewBlock.SetCompact(pblock->nBits);
         CBigNum bnRequired;
-        bnRequired.SetCompact(ComputeMinWork(pcheckpoint->nBits, deltaTime));
+        bnRequired.SetCompact(ComputeMinWork(pcheckpoint->nBits, deltaTime, pcheckpoint->nHeight));
 
         if (bnNewBlock > bnRequired)
         {
             printf("WARN: low proof of work: bnNewBlock: %08x bnRequired: %08x\n",
 				pblock->nBits, bnRequired.GetCompact());
-            //return state.DoS(100, error("ProcessBlock() : block with too little proof-of-work"));
-            // Don't throw them under the bus yet, at least until we get more nodes upgraded
-            // from Forktackular February -- Troy
-            return state.DoS(25, error("ProcessBlock() : block with too little proof-of-work"));
+            return state.DoS(100, error("ProcessBlock() : block with too little proof-of-work"));
         }
     }
 
