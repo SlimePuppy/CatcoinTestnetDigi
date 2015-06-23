@@ -1,7 +1,7 @@
 TEMPLATE = app
 TARGET = catcoin-qt
 macx:TARGET = "Catcoin-Qt"
-VERSION = 0.8.9
+VERSION = 0.9.2
 INCLUDEPATH += src src/json src/qt
 QT += core gui network
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -20,15 +20,15 @@ CONFIG += thread
 #    BDB_LIB_PATH, OPENSSL_INCLUDE_PATH and OPENSSL_LIB_PATH respectively
 
 # Windows compilation, refer to the link below for detailed instructions
-# https://bitcointalk.org/index.php?topic=149479.0
+# http://catcoinwallets.com/win/catcoin_wallet_build_windows.pdf
 win32 {
-    BOOST_LIB_SUFFIX=-mgw48-mt-s-1_54
-    BOOST_INCLUDE_PATH=C:/deps/boost_1_54_0
-    BOOST_LIB_PATH=C:/deps/boost_1_54_0/stage/lib
-    BDB_INCLUDE_PATH=C:/deps/db-4.8.30.NC/build_unix
-    BDB_LIB_PATH=C:/deps/db-4.8.30.NC/build_unix
-    OPENSSL_INCLUDE_PATH=C:/deps/openssl-1.0.1e/include
-    OPENSSL_LIB_PATH=C:/deps/openssl-1.0.1e
+    BOOST_LIB_SUFFIX=-mgw48-mt-s-1_53
+    BOOST_INCLUDE_PATH=C:/deps/boost_1_53_0
+    BOOST_LIB_PATH=C:/deps/boost_1_53_0/stage/lib
+    BDB_INCLUDE_PATH=C:/deps/db-6.0.20.NC/build_unix
+    BDB_LIB_PATH=C:/deps/db-6.0.20.NC/build_unix
+    OPENSSL_INCLUDE_PATH=C:/deps/openssl-1.0.1h/include
+    OPENSSL_LIB_PATH=C:/deps/openssl-1.0.1h
     MINIUPNPC_INCLUDE_PATH=C:/deps/
     MINIUPNPC_LIB_PATH=C:/deps/miniupnpc
 }
