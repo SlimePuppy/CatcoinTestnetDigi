@@ -1,4 +1,4 @@
-Catcoin 0.8.x BETA
+Catcoin 0.9.x BETA
 ====================
 
 Copyright (c) 2009-2015 Bitcoin Developers
